@@ -6,15 +6,15 @@ import navigation_2d
 from models.local_model_sac import LocalModelSAC
 
 
+# FIXME:
 env_id = 7
 TIME_STEP = 10000
-
 
 env = gym.make(f"Navi-Acc-Lidar-Obs-Task{env_id}_easy-v0")
 
 # ===
 guide_model = SAC("MlpPolicy", env, verbose=1, learning_starts=100)
-guide_model = guide_model.load('models/model_30')
+guide_model = guide_model.load('models/model_30_FL')
 guide_model.tensorboard_log = f"tensorboard/base_global_env_{env_id}"
 guide_model.set_env(env)
 guide_model.verbose = 1

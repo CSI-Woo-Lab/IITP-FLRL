@@ -6,6 +6,7 @@ import navigation_2d
 from models.local_model_sac import LocalModelSAC
 
 
+# FIXME:
 env_id = 7
 TIME_STEP = 10000
 
