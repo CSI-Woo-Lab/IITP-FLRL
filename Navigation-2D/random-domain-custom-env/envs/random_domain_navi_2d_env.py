@@ -7,11 +7,13 @@ class RandomDomainNavigationEnvAccLidarObs(NavigationEnvAccLidarObs):
         super().__init__(task_args, max_obs_range=max_obs_range, max_speed=max_speed, initial_speed=initial_speed, **kwargs)
         self.goal_reset_period = goal_reset_period
         self.cur_num_reset = 0
+        self.cur_env_num = 0
 
     def reset(self):
         self.cur_num_reset += 1
         if self.cur_num_reset >= self.goal_reset_period:
-            random_num = random.randint(0, 7)
-            self.task_args["Goal"] = config.goal_set[random_num]
+            env_num = self.cur_env_num % 8
+            self.task_args["Goal"] = config.goal_set[env_num]
             self.cur_num_reset = 0
+        self.cur_env_num += 1
         return super().reset()
