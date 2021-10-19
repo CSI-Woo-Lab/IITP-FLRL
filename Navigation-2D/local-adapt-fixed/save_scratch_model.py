@@ -16,4 +16,4 @@ env_id = 0
 env = gym.make(f"Navi-Acc-Lidar-Obs-Task{env_id}_easy-v0")
 model = SAC("MlpPolicy", env, tensorboard_log="tensorboard_scratch")
 model.learn(timesteps)
-model.save(f"rl_model_scratch_3.2M")
+model.save(f"model_results/rl_model_scratch_3.2M")

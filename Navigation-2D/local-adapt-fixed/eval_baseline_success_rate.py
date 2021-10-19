@@ -21,7 +21,7 @@ env = gym.make(f"Navi-Acc-Lidar-Obs-Task{env_id}_easy-v0")
 
 # no adaptation
 # model = SAC.load("models/model_40_FL_homogen.zip")
-model = SAC.load("rl_model_scratch_3.2M")
+model = SAC.load("model_results/rl_model_scratch_3.2M")
 
 # scratch adaptation
 model.set_env(env)

@@ -25,7 +25,7 @@ guide_model.verbose = 1
 # adaptation phase 1
 guide_model.learn(TIME_STEP)
 
-guide_model.save(f"rl_model_from_global_env_{env_id}")
+guide_model.save(f"model_results/rl_model_from_global_env_{env_id}")
 
 # ===
 # local_model = LocalModelSAC("MlpPolicy", env, guide_model=guide_model, verbose=1, learning_starts=100, tensorboard_log=f"tensorboard/main_local_env_{env_id}")

@@ -1,4 +1,4 @@
-from threading import local
+import argparse
 import gym
 import navigation_2d
 from stable_baselines3 import SAC
@@ -9,17 +9,25 @@ import torch
 from models.local_model_sac import LocalModelSAC
 torch.manual_seed(2021)
 
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--alpha", "-a", type=float, default=argparse.SUPPRESS)
+parser.add_argument("--env_id", "-e", default=argparse.SUPPRESS)
+args = parser.parse_args()
+
+alpha = args.alpha  # local model coef
+env_id = args.env_id
+
+
 max_distance_threshold = 8.48528137423857
 # FIXME: main
-env_id = 3
 distance_threshold_rate_list = [0.2, 0.4, 0.6]
 # env1: 0.1, env2: 0.5, env3: 0.25
-alpha = 0.1  # local model coef
 beta = 1 - alpha  # global model coef
 
 env = gym.make(f"Navi-Acc-Lidar-Obs-Task{env_id}_easy-v0")
-guide_model = SAC.load(f"rl_model_main_guide_env_{env_id}_alpha_{alpha}")
-model = LocalModelSAC.load(f"rl_model_main_env_{env_id}_alpha_{alpha}", guide_model)
+guide_model = SAC.load(f"model_results/rl_model_main_guide_env_{env_id}_alpha_{alpha}")
+model = LocalModelSAC.load(f"model_results/rl_model_main_env_{env_id}_alpha_{alpha}", guide_model)
 
 # evaluation
 num_epi_eval = 100

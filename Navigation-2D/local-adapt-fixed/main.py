@@ -1,3 +1,4 @@
+import argparse
 from stable_baselines3 import SAC
 
 import gym
@@ -8,12 +9,17 @@ from models.local_model_sac import LocalModelSAC
 import torch
 torch.manual_seed(2021)
 
+parser = argparse.ArgumentParser()
+parser.add_argument("--alpha", "-a", type=float, default=argparse.SUPPRESS)
+parser.add_argument("--env_id", "-e", default=argparse.SUPPRESS)
+args = parser.parse_args()
+
+alpha = args.alpha  # local model coef
+env_id = args.env_id
 
 # FIXME:
-env_id = 3
 PHASE_1_TIME_STEP = 5000
 PHASE_2_TIME_STEP = 5000
-alpha = 0.1  # local model coef
 beta = 1 - alpha  # global model coef
 
 env = gym.make(f"Navi-Acc-Lidar-Obs-Task{env_id}_easy-v0")
@@ -36,8 +42,8 @@ local_model.replay_buffer = guide_model.replay_buffer
 # adaptation phase 2
 local_model.learn(PHASE_2_TIME_STEP)
 
-local_model.save(f"rl_model_main_env_{env_id}_alpha_{alpha}.zip", exclude=["guide_model"])
-guide_model.save(f"rl_model_main_guide_env_{env_id}_alpha_{alpha}.zip")
+local_model.save(f"model_results/rl_model_main_env_{env_id}_alpha_{alpha}.zip", exclude=["guide_model"])
+guide_model.save(f"model_results/rl_model_main_guide_env_{env_id}_alpha_{alpha}.zip")
 
 # evaluation
 for epi in range(10):
