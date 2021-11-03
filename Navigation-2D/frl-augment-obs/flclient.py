@@ -1,4 +1,4 @@
-import sys
+import argparse
 from collections import OrderedDict
 
 import flwr as fl
@@ -79,11 +79,11 @@ def test(model, env):
 
 
 if __name__ == "__main__":
-    if len(sys.argv)-1 != 3 :
-        print("usage : flclient.py [log folder name] [client id (env id)] [port]")
-        print("client id - integer for identify client log")
-        exit()
-    # example: log_client_fedadagrad
-    log_path = "./{}/client_{}".format(sys.argv[1], sys.argv[2])
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--log-name", "-ln", default=argparse.SUPPRESS)
+    parser.add_argument("--client-id", "-i", default=argparse.SUPPRESS)
+    parser.add_argument("--port", "-p", default="8081", type=str)
+    args = parser.parse_args()
+    log_path = f"./{args.log_name}/client_{args.client_id}"
     print("log path : ", log_path)
-    main(log_path, sys.argv[2], sys.argv[3])
+    main(log_path, args.client_id, args.port)
