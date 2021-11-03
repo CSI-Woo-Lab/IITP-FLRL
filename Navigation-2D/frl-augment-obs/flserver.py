@@ -47,7 +47,7 @@ def set_parameters(model, parameters):
     return model
 
 
-def main():
+def main(args):
     class SaveModelStrategyFedAvg(fl.server.strategy.FedAvg):
         def aggregate_fit(
             self,
@@ -84,12 +84,11 @@ def main():
         min_eval_clients=NUM_CLIENTS,
     )
 
-    fl.server.start_server(config={"num_rounds": NUM_ROUNDS}, strategy=strategy, server_address=f"[::]:8001")
+    fl.server.start_server(config={"num_rounds": NUM_ROUNDS}, strategy=strategy, server_address=f"[::]:{args.port}")
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--optimizer", "-o", default=None, type=str)
+    parser.add_argument("--port", "-p", default="8081", type=str)
     args = parser.parse_args()
-    cls_name = args.optimizer
-    main(cls_name)
+    main(args)
