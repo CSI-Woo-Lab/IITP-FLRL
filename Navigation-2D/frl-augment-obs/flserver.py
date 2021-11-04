@@ -65,7 +65,7 @@ def main(args):
                 model = SAC("MlpPolicy", eval_env, verbose=0)
                 aggregated_parameter = parameters_to_weights(aggregated_weights)
                 model = set_parameters(model, aggregated_parameter)
-                model.save(f"./log-model-fedadagrad/model_{rnd}.zip")  # FIXME
+                model.save(f"./log-model-{args.augment}/model_{rnd}.zip")  # FIXME
                 
             return aggregated_weights, aggregated_res[1]
 
@@ -90,5 +90,6 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--port", "-p", default="8081", type=str)
+    parser.add_argument("--augment", "-a", default=argparse.SUPPRESS, type=str, choices=["amplitude", "noise"])
     args = parser.parse_args()
     main(args)
