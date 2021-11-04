@@ -11,6 +11,8 @@ import navigation_2d
 from stable_baselines3 import SAC
 from stable_baselines3.common.evaluation import evaluate_policy
 
+from custom_buffers import AmplitudeSampleReplayBuffer, NoiseSampleReplayBuffer
+
 DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 print( "Device = ", DEVICE)
 
@@ -19,12 +21,17 @@ print( "Device = ", DEVICE)
 TIME_STEPS = 20000
 
 
-def main(log_path, env_id, port):
+def main(log_path, env_id, port, args):
     """Create model, Create env, define Flower client, start Flower client."""
     
     # FIXME: 0 1 2 3, non-iid
     env = gym.make(f"Navi-Acc-Lidar-Obs-Task{env_id}_easy-v0")
-    model = SAC("MlpPolicy", env, verbose=1, tensorboard_log=log_path)
+    if args.augment == "amplitude":
+        model = SAC("MlpPolicy", env, verbose=1, tensorboard_log=log_path, replay_buffer_class=AmplitudeSampleReplayBuffer)
+    elif args.augment == "noise":
+        model = SAC("MlpPolicy", env, verbose=1, tensorboard_log=log_path, replay_buffer_class=NoiseSampleReplayBuffer)
+    else:
+        model = SAC("MlpPolicy", env, verbose=1, tensorboard_log=log_path)
 
     tmp = 100 # RL에서 사용하지 않는 num_examples를 대신하기위한 dummy value
 
@@ -62,7 +69,7 @@ def main(log_path, env_id, port):
 
         def evaluate(self, parameters, config):
             self.set_parameters(parameters)
-            loss, reward = test(model, env)
+            reward = test(model, env)
             return reward, tmp , {"Reward": float(reward)}
 
     # FIXME: Start client ( flserver를 돌리는 주소로 변경 후 사용 )
@@ -75,7 +82,8 @@ def train(model, time_steps):
 
 def test(model, env):
     mean_reward, std_reward = evaluate_policy(model, env, n_eval_episodes=10)
-    return 1, mean_reward
+    print(f"mean reward {mean_reward}")
+    return mean_reward
 
 
 if __name__ == "__main__":
@@ -83,7 +91,8 @@ if __name__ == "__main__":
     parser.add_argument("--log-name", "-ln", default=argparse.SUPPRESS)
     parser.add_argument("--client-id", "-i", default=argparse.SUPPRESS)
     parser.add_argument("--port", "-p", default="8081", type=str)
+    parser.add_argument("--augment", "-a", default=argparse.SUPPRESS, type=str, choices=["amplitude", "noise"])
     args = parser.parse_args()
     log_path = f"./{args.log_name}/client_{args.client_id}"
     print("log path : ", log_path)
-    main(log_path, args.client_id, args.port)
+    main(log_path, args.client_id, args.port, args)
