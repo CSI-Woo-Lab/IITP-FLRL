@@ -63,7 +63,7 @@ def main(log_path, env_id, port):
         def evaluate(self, parameters, config):
             self.set_parameters(parameters)
             loss, reward = test(model, env)
-            return float(loss), tmp , {"Reward": float(reward)}
+            return reward, tmp , {"Reward": float(reward)}
 
     # FIXME: Start client ( flserver를 돌리는 주소로 변경 후 사용 )
     fl.client.start_numpy_client(f"[::]:{port}", client=SACClient())
