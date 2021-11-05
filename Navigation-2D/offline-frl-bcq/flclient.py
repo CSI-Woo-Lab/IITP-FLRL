@@ -5,6 +5,8 @@ import flwr as fl
 from tqdm import tqdm
 import torch
 import numpy as np
+from pathlib import Path
+import os
 import gym
 import navigation_2d
 import BCQ
@@ -17,9 +19,9 @@ def train(policy, replay_buffer, args):
     training_iters = 0
 
     while training_iters < args.max_timesteps:
-        if args.client_name == "bcq" or "bcq-naive" or "bcq-critic":
+        if args.client_name in ["bcq", "bcq-naive", "bcq-critic"]:
             pol_vals = policy.train(replay_buffer, iterations=int(args.eval_freq), batch_size=args.batch_size)
-        elif args.client_name == "ddpg":
+        elif args.client_name == "ddpg-offline":
             for it in tqdm(range(args.eval_freq)):
                 policy.train(replay_buffer, args.batch_size)
 
@@ -89,9 +91,9 @@ def main(env_id, args):
     # device = torch.device("cpu")
 
     # Initialize policy
-    if args.client_name == "bcq" or "bcq-naive" or "bcq-critic":
+    if args.client_name in ["bcq", "bcq-naive", "bcq-critic"]:
         policy = BCQ.BCQ(state_dim, action_dim, max_action, device)
-    elif args.client_name == "ddpg" or "ddpg-online":
+    elif args.client_name in ["ddpg-offline", "ddpg-online"]:
         policy = DDPG.DDPG(state_dim, action_dim, max_action, device)
 
     replay_buffer = utils.ReplayBuffer(state_dim, action_dim, device)
@@ -132,6 +134,11 @@ def main(env_id, args):
         def fit(self, parameters, config):
             print("=========[BCQ fitting start]============")
             train(policy, replay_buffer, args)
+
+            print("[save client vae]")
+            log_path = f"result-model-{args.client_name}-{args.log_name}"
+            Path(log_path).mkdir(parents=True, exist_ok=True)
+            policy.save_client_vae(os.path.join(log_path, "weights"), args.env_id, seed=args.seed)
             return self.get_parameters(), tmp, {}
 
         def evaluate(self, parameters, config):
@@ -306,5 +313,6 @@ if __name__ == "__main__":
     parser.add_argument("--max_timesteps", default=1000, type=int)   # Max time steps to run environment or train for (this defines buffer size)
     parser.add_argument("--start_timesteps", default=100, type=int)# Time steps initial random policy is used before training behavioral
     parser.add_argument("--gaussian_std", default=0.1, type=float)  # Std of Gaussian exploration noise (Set to 0.1 if DDPG trains poorly)
+    parser.add_argument("--log_name")
     args = parser.parse_args()
     main(env_id=args.env_id, args=args)

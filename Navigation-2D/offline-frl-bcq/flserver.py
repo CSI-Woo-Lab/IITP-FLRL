@@ -10,6 +10,7 @@ import navigation_2d
 import flwr as fl
 from flwr.common.parameter import parameters_to_weights
 import DDPG
+import BCQ
 
 
 def main(args):
@@ -32,7 +33,11 @@ def main(args):
                 max_action = float(env.action_space.high[0])
                 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
                 # device = torch.device("cpu")
-                policy = DDPG.DDPG(state_dim, action_dim, max_action, device)
+
+                if args.client_name == "ddpg-offline" or args.client_name == "ddpg-online":
+                    policy = DDPG.DDPG(state_dim, action_dim, max_action, device)
+                else:
+                    policy = BCQ.BCQ(state_dim, action_dim, max_action, device)
 
                 len_a = len(policy.actor.state_dict().items())
                 len_c = len(policy.critic.state_dict().items())
@@ -50,7 +55,7 @@ def main(args):
 
                 # Save aggregated_weights
                 print(f"Saving round {rnd} aggregated_weights...")
-                log_path = f"result-model-{args.log_name}"
+                log_path = f"result-model-{args.client_name}-{args.log_name}"
                 Path(log_path).mkdir(parents=True, exist_ok=True)
                 policy.save(os.path.join(log_path, f"round-{rnd}-weights"))
             return aggregated_weights
@@ -74,7 +79,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--port", default=8080)
     parser.add_argument("--num_client", default=4)
-    parser.add_argument("--num_round", default=50)
+    parser.add_argument("--num_round", default=10)
     parser.add_argument("--log_name", default=argparse.SUPPRESS, type=str)
+    parser.add_argument("--client_name", default=argparse.SUPPRESS, choices=["bcq", "bcq-naive", "bcq-critic", "ddpg-offline", "ddpg-online"])
     args = parser.parse_args()
     main(args)
