@@ -86,6 +86,7 @@ def main(env_id, args):
     buffer_name = f"{args.buffer_name}_{setting}"
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    # device = torch.device("cpu")
 
     # Initialize policy
     if args.client_name == "bcq" or "bcq-naive" or "bcq-critic":
@@ -216,7 +217,7 @@ def main(env_id, args):
             return float(avg_reward), tmp, {"avg_reward":float(avg_reward)}
 
 
-    class DDPGClient(fl.client.NumPyClient):
+    class DDPGOfflineClient(fl.client.NumPyClient):
         def get_parameters(self):
             actor_params = [val.cpu().numpy() for _, val in policy.actor.state_dict().items()]
             critic_params = [val.cpu().numpy() for _, val in policy.critic.state_dict().items()]
@@ -284,7 +285,7 @@ def main(env_id, args):
         "bcq": BCQClient,
         "bcq-naive": BCQNaiveClient,
         "bcq-critic": BCQCriticClient,
-        "ddpg": DDPGClient,
+        "ddpg-offline": DDPGOfflineClient,
         "ddpg-online": DDPGOnlineClient,
     }
     client_cls = client_dict[args.client_name]
@@ -295,7 +296,7 @@ def main(env_id, args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--client_name", default=argparse.SUPPRESS)
+    parser.add_argument("--client_name", default=argparse.SUPPRESS, choices=["bcq", "bcq-naive", "bcq-critic", "ddpg-offline", "ddpg-online"])
     parser.add_argument("--env_id", default=argparse.SUPPRESS)
     parser.add_argument("--port", default=8080)
     parser.add_argument("--seed", default=0, type=int)              # Sets Gym, PyTorch and Numpy seeds
