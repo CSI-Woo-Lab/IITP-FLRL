@@ -213,10 +213,10 @@ class BCQ(object):
 		self.vae.load_state_dict(torch.load(filename + "_vae"))
 		self.vae_optimizer.load_state_dict(torch.load(filename + "_vae_optimizer"))
 
-	def save_client_vae(self, filename, env_id, seed=0):
-		torch.save(self.vae.state_dict(), filename + f"_env_{env_id}_{seed}_vae")
-		torch.save(self.vae_optimizer.state_dict(), filename + f"_env_{env_id}_{seed}_vae_optimizer")
+	def save_client_vae(self, filename, env_id, cur_round, seed=0):
+		torch.save(self.vae.state_dict(), filename + f"_round{cur_round}_env_{env_id}_{seed}_vae")
+		torch.save(self.vae_optimizer.state_dict(), filename + f"_round{cur_round}_env_{env_id}_{seed}_vae_optimizer")
 
-	def load_client_vae(self, filename, env_id, seed=0):
-		self.vae.load_state_dict(torch.load(filename + f"_env_{env_id}_{seed}_vae"))
-		self.vae_optimizer.load_state_dict(torch.load(filename + f"_env_{env_id}_{seed}_vae_optimizer"))
+	def load_client_vae(self, filename, env_id, cur_round, seed=0):
+		self.vae.load_state_dict(torch.load(filename + f"_round{cur_round}_env_{env_id}_{seed}_vae"))
+		self.vae_optimizer.load_state_dict(torch.load(filename + f"_round{cur_round}_env_{env_id}_{seed}_vae_optimizer"))
