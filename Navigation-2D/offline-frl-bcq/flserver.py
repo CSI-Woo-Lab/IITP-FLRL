@@ -34,7 +34,7 @@ def main(args):
                 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
                 # device = torch.device("cpu")
 
-                if args.client_name == "ddpg-offline" or args.client_name == "ddpg-online":
+                if args.client_name in ["ddpg-offline", "ddpg-online"]:
                     policy = DDPG.DDPG(state_dim, action_dim, max_action, device)
                 else:
                     policy = BCQ.BCQ(state_dim, action_dim, max_action, device)
@@ -79,7 +79,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--port", default=8080)
     parser.add_argument("--num_client", default=4)
-    parser.add_argument("--num_round", default=10)
+    parser.add_argument("--num_round", default=100)
     parser.add_argument("--log_name", default=argparse.SUPPRESS, type=str)
     parser.add_argument("--client_name", default=argparse.SUPPRESS, choices=["bcq", "bcq-naive", "bcq-critic", "ddpg-offline", "ddpg-online"])
     args = parser.parse_args()
