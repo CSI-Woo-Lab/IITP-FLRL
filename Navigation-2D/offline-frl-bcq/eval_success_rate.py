@@ -56,15 +56,17 @@ if __name__ == "__main__":
     max_action = float(env.action_space.high[0])
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+    result_model_dir_name = "result-model-bcq-phi-round-10"
+
     if args.client_name in ["bcq", "bcq-naive", "bcq-critic"]:
         model = BCQ.BCQ(state_dim, action_dim, max_action, device)
-        model.load(f"result-model-round-10/result-model-{args.client_name}-{args.log_name}/round-10-weights")
+        model.load(f"{result_model_dir_name}/result-model-{args.client_name}-{args.log_name}/round-10-weights")  # FIXME
     elif args.client_name in ["ddpg-offline", "ddpg-online"]:
         model = DDPG.DDPG(state_dim, action_dim, max_action, device)
-        model.load(f"result-model-round-10/result-model-{args.client_name}-{args.log_name}/round-10-weights")
+        model.load(f"{result_model_dir_name}/result-model-{args.client_name}-{args.log_name}/round-10-weights")  # FIXME
 
     if args.client_name == "bcq":
-        model.load_client_vae(f"result-model-round-10/result-model-{args.client_name}-{args.log_name}/weights", args.env_id, args.train_seed)
+        model.load_client_vae(f"{result_model_dir_name}/result-model-{args.client_name}-{args.log_name}/weights", args.env_id, args.train_seed)
 
     # evaluation
     evaluate_navi_2d(model, env)
