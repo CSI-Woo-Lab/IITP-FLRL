@@ -41,8 +41,8 @@ class Critic(nn.Module):
 		return self.l3(q)
 
 
-class DDPG(object):
-	def __init__(self, state_dim, action_dim, max_action, device, discount=0.99, tau=0.005):
+class CQL(object):
+	def __init__(self, state_dim, action_dim, max_action, device, discount=0.99, tau=0.005, num_random_act=10):
 		self.actor = Actor(state_dim, action_dim, max_action).to(device)
 		self.actor_target = copy.deepcopy(self.actor)
 		self.actor_optimizer = torch.optim.Adam(self.actor.parameters())
@@ -54,6 +54,8 @@ class DDPG(object):
 		self.discount = discount
 		self.tau = tau
 		self.device = device
+
+		self.num_random_act = num_random_act
 
 
 	def select_action(self, state):
@@ -74,6 +76,26 @@ class DDPG(object):
 
 		# Compute critic loss
 		critic_loss = F.mse_loss(current_Q, target_Q)
+
+		# CQL loss
+		random_actions = torch.FloatTensor(current_Q.shape[0] * self.num_random_act, action.shape[-1]).uniform_(-1, 1).to(self.device)
+		curr_actions = self.actor(state.unsqueeze(1).repeat(1, self.num_random_act, 1).view(state.shape[0] * self.num_random_act, state.shape[1]))
+		new_actinos = self.actor(next_state.unsqueeze(1).repeat(1, self.num_random_act, 1).view(next_state.shape[0] * self.num_random_act, next_state.shape[1]))
+
+		repeat_state = state.repeat(self.num_random_act, 1)
+		repeat_current_Q = current_Q.repeat(self.num_random_act, 1)
+
+		random_Q = self.critic(repeat_state, random_actions)
+		curr_Q = self.critic(repeat_state, curr_actions)
+		next_Q = self.critic(repeat_state, new_actinos)
+
+		cat_Q = torch.cat([random_Q, repeat_current_Q, next_Q, curr_Q], 1)
+
+		min_Q_loss = torch.logsumexp(cat_Q, dim=1).mean()
+		min_Q_loss = min_Q_loss - current_Q.mean()
+
+		# add CQL loss
+		critic_loss = critic_loss + min_Q_loss
 
 		# Optimize the critic
 		self.critic_optimizer.zero_grad()
