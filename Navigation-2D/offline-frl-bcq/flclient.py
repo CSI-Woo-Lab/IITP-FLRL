@@ -11,6 +11,7 @@ import gym
 import navigation_2d
 import BCQ
 import DDPG
+import CQL_DDPG
 import utils
 from utils import eval_policy
 
@@ -21,7 +22,7 @@ def train(policy, replay_buffer, args):
     while training_iters < args.max_timesteps:
         if args.client_name in ["bcq", "bcq-naive", "bcq-critic"]:
             pol_vals = policy.train(replay_buffer, iterations=int(args.eval_freq), batch_size=args.batch_size)
-        elif args.client_name == "ddpg-offline":
+        elif args.client_name in ["ddpg-offline", "cql"]:
             for it in tqdm(range(args.eval_freq)):
                 policy.train(replay_buffer, args.batch_size)
 
@@ -95,6 +96,8 @@ def main(env_id, args):
         policy = BCQ.BCQ(state_dim, action_dim, max_action, device, phi=args.phi)
     elif args.client_name in ["ddpg-offline", "ddpg-online"]:
         policy = DDPG.DDPG(state_dim, action_dim, max_action, device)
+    elif args.client_name == "cql":
+        policy = CQL_DDPG.CQL(state_dim, action_dim, max_action, device)
 
     replay_buffer = utils.ReplayBuffer(state_dim, action_dim, device)
 	# Load buffer
@@ -288,12 +291,46 @@ def main(env_id, args):
             avg_reward = eval_policy(policy, env_name, args.seed)
             return float(avg_reward), tmp, {"avg_reward":float(avg_reward)}
 
+    class CQLClient(fl.client.NumPyClient):
+        def get_parameters(self):
+            actor_params = [val.cpu().numpy() for _, val in policy.actor.state_dict().items()]
+            critic_params = [val.cpu().numpy() for _, val in policy.critic.state_dict().items()]
+            params = actor_params + critic_params
+            return params
+
+        def set_parameters(self, parameters):
+            len_a = len(policy.actor.state_dict().items())
+            len_c = len(policy.critic.state_dict().items())
+            actor_params = parameters[0:len_a]
+            critic_params = parameters[len_a:len_a+len_c]
+
+            params_dict_a = zip(policy.actor.state_dict().keys(), actor_params)
+            params_dict_c = zip(policy.critic.state_dict().keys(), critic_params)
+            
+            state_dict_a = OrderedDict({k: torch.Tensor(v) for k, v in params_dict_a})
+            state_dict_c = OrderedDict({k: torch.Tensor(v) for k, v in params_dict_c})
+
+            policy.actor.load_state_dict(state_dict_a, strict=True)
+            policy.critic.load_state_dict(state_dict_c, strict=True)
+
+        def fit(self, parameters, config):
+            print("=========[CQL fitting start]============")
+            train(policy, replay_buffer, args)
+            return self.get_parameters(), tmp, {}
+
+        def evaluate(self, parameters, config):
+            self.set_parameters(parameters)
+            avg_reward = eval_policy(policy, env_name, args.seed)
+            return float(avg_reward), tmp, {"avg_reward":float(avg_reward)}
+
+
     client_dict = {
         "bcq": BCQClient,
         "bcq-naive": BCQNaiveClient,
         "bcq-critic": BCQCriticClient,
         "ddpg-offline": DDPGOfflineClient,
         "ddpg-online": DDPGOnlineClient,
+        "cql": CQLClient,
     }
     client_cls = client_dict[args.client_name]
 
@@ -303,7 +340,7 @@ def main(env_id, args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--client_name", default=argparse.SUPPRESS, choices=["bcq", "bcq-naive", "bcq-critic", "ddpg-offline", "ddpg-online"])
+    parser.add_argument("--client_name", default=argparse.SUPPRESS, choices=["bcq", "bcq-naive", "bcq-critic", "ddpg-offline", "ddpg-online", "cql"])
     parser.add_argument("--env_id", default=argparse.SUPPRESS)
     parser.add_argument("--port", default=8080)
     parser.add_argument("--seed", default=0, type=int)              # Sets Gym, PyTorch and Numpy seeds

@@ -11,6 +11,7 @@ import flwr as fl
 from flwr.common.parameter import parameters_to_weights
 import DDPG
 import BCQ
+import CQL_DDPG
 
 
 def main(args):
@@ -36,6 +37,8 @@ def main(args):
 
                 if args.client_name in ["ddpg-offline", "ddpg-online"]:
                     policy = DDPG.DDPG(state_dim, action_dim, max_action, device)
+                elif args.client_name == "cql":
+                    policy = CQL_DDPG.CQL(state_dim, action_dim, max_action, device)
                 else:
                     policy = BCQ.BCQ(state_dim, action_dim, max_action, device)
 
@@ -81,6 +84,6 @@ if __name__ == "__main__":
     parser.add_argument("--num_client", default=4)
     parser.add_argument("--num_round", default=10)
     parser.add_argument("--log_name", default=argparse.SUPPRESS, type=str)
-    parser.add_argument("--client_name", default=argparse.SUPPRESS, choices=["bcq", "bcq-naive", "bcq-critic", "ddpg-offline", "ddpg-online"])
+    parser.add_argument("--client_name", default=argparse.SUPPRESS, choices=["bcq", "bcq-naive", "bcq-critic", "ddpg-offline", "ddpg-online", "cql"])
     args = parser.parse_args()
     main(args)
