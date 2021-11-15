@@ -92,7 +92,7 @@ def main(env_id, args):
 
     # Initialize policy
     if args.client_name in ["bcq", "bcq-naive", "bcq-critic"]:
-        policy = BCQ.BCQ(state_dim, action_dim, max_action, device)
+        policy = BCQ.BCQ(state_dim, action_dim, max_action, device, phi=args.phi)
     elif args.client_name in ["ddpg-offline", "ddpg-online"]:
         policy = DDPG.DDPG(state_dim, action_dim, max_action, device)
 
@@ -313,6 +313,7 @@ if __name__ == "__main__":
     parser.add_argument("--max_timesteps", default=1000, type=int)   # Max time steps to run environment or train for (this defines buffer size)
     parser.add_argument("--start_timesteps", default=100, type=int)# Time steps initial random policy is used before training behavioral
     parser.add_argument("--gaussian_std", default=0.1, type=float)  # Std of Gaussian exploration noise (Set to 0.1 if DDPG trains poorly)
+    parser.add_argument("--phi", default=0.05, type=float)                      # Max perturbation hyper-parameter for BCQ
     parser.add_argument("--log_name", default=argparse.SUPPRESS, type=str)
     args = parser.parse_args()
     main(env_id=args.env_id, args=args)
