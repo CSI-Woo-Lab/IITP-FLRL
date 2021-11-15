@@ -146,6 +146,30 @@ def train_CQL(state_dim, action_dim, max_action, device, args):
 		print(f"Training iterations: {training_iters}")
 
 
+def train_DDPG_offline(state_dim, action_dim, max_action, device, args):
+	# For saving files
+	setting = f"{args.env}_{args.seed}"
+	buffer_name = f"{args.buffer_name}_{setting}"
+
+	policy = DDPG.DDPG(state_dim, action_dim, max_action, device)
+
+	# Load buffer
+	replay_buffer = utils.ReplayBuffer(state_dim, action_dim, device)
+	replay_buffer.load(f"./buffers/{buffer_name}")
+
+	evaluations = []
+	training_iters = 0
+	while training_iters < args.max_timesteps:
+		for it in tqdm(range(int(args.eval_freq))):
+			policy.train(replay_buffer, args.batch_size)
+		
+		evaluations.append(eval_policy(policy, args.env, args.seed))
+		np.save(f"./results/DDPG_offline_{setting}", evaluations)
+
+		training_iters += args.eval_freq	
+		print(f"Training iterations: {training_iters}")
+
+
 # Runs policy for X episodes and returns average reward
 # A fixed seed is used for the eval environment
 def eval_policy(policy, env_name, seed, eval_episodes=10):
@@ -187,6 +211,7 @@ if __name__ == "__main__":
 	parser.add_argument("--train_behavioral", action="store_true")  # If true, train behavioral (DDPG)
 	parser.add_argument("--generate_buffer", action="store_true")   # If true, generate buffer
 	parser.add_argument("--cql", action="store_true")   # If true, train cql
+	parser.add_argument("--ddpg_offline", action="store_true")   # If true, train ddpg offline
 	args = parser.parse_args()
 
 	print("---------------------------------------")	
@@ -230,5 +255,7 @@ if __name__ == "__main__":
 		interact_with_environment(env, state_dim, action_dim, max_action, device, args)
 	elif args.cql:
 		train_CQL(state_dim, action_dim, max_action, device, args)
+	elif args.ddpg_offline:
+		train_DDPG_offline(state_dim, action_dim, max_action, device, args)
 	else:
 		train_BCQ(state_dim, action_dim, max_action, device, args)
