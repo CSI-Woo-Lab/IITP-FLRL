@@ -5,6 +5,7 @@ from stable_baselines3 import SAC
 from tqdm import tqdm
 import BCQ
 import DDPG
+import CQL_DDPG
 
 import torch
 
@@ -44,7 +45,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--env_id", "-e", default=argparse.SUPPRESS)
     parser.add_argument("--log_name", default=argparse.SUPPRESS, type=str)
-    parser.add_argument("--client_name", default=argparse.SUPPRESS, choices=["bcq", "bcq-naive", "bcq-critic", "ddpg-offline", "ddpg-online"])
+    parser.add_argument("--client_name", default=argparse.SUPPRESS, choices=["bcq", "bcq-naive", "bcq-critic", "ddpg-offline", "ddpg-online", "cql"])
     parser.add_argument("--train_seed", default=0, type=int)
     args = parser.parse_args()
 
@@ -56,14 +57,17 @@ if __name__ == "__main__":
     max_action = float(env.action_space.high[0])
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    result_model_dir_name = "result-model-bcq-phi-round-10"
+    result_model_dir_name = "result-model-round-100"
 
     if args.client_name in ["bcq", "bcq-naive", "bcq-critic"]:
         model = BCQ.BCQ(state_dim, action_dim, max_action, device)
-        model.load(f"{result_model_dir_name}/result-model-{args.client_name}-{args.log_name}/round-10-weights")  # FIXME
+        model.load(f"{result_model_dir_name}/result-model-{args.client_name}-{args.log_name}/round-100-weights")  # FIXME
     elif args.client_name in ["ddpg-offline", "ddpg-online"]:
         model = DDPG.DDPG(state_dim, action_dim, max_action, device)
-        model.load(f"{result_model_dir_name}/result-model-{args.client_name}-{args.log_name}/round-10-weights")  # FIXME
+        model.load(f"{result_model_dir_name}/result-model-{args.client_name}-{args.log_name}/round-100-weights")  # FIXME
+    elif args.client_name == "cql":
+        model = CQL_DDPG.CQL(state_dim, action_dim, max_action, device)
+        model.load(f"{result_model_dir_name}/result-model-{args.client_name}-{args.log_name}/round-100-weights")  # FIXME
 
     if args.client_name == "bcq":
         model.load_client_vae(f"{result_model_dir_name}/result-model-{args.client_name}-{args.log_name}/weights", args.env_id, args.train_seed)
