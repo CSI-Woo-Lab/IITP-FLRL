@@ -115,6 +115,8 @@ def train_BCQ(state_dim, action_dim, max_action, device, args):
 
 		training_iters += args.eval_freq
 		print(f"Training iterations: {training_iters}")
+	
+	policy.save(f"./models/BCQ_{setting}")
 
 
 # Trains CQL offline
@@ -144,7 +146,9 @@ def train_CQL(state_dim, action_dim, max_action, device, args):
 
 		training_iters += args.eval_freq
 		print(f"Training iterations: {training_iters}")
-
+	
+	policy.save(f"./models/CQL_{setting}")
+	
 
 def train_DDPG_offline(state_dim, action_dim, max_action, device, args):
 	# For saving files
@@ -168,6 +172,8 @@ def train_DDPG_offline(state_dim, action_dim, max_action, device, args):
 
 		training_iters += args.eval_freq	
 		print(f"Training iterations: {training_iters}")
+
+	policy.save(f"./models/DDPG_offline_{setting}")
 
 
 # Runs policy for X episodes and returns average reward
