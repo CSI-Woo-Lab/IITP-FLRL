@@ -1,0 +1,4 @@
+d3rlpy==0.91
+flwr==0.17.0
+gym==0.18.0
+navigation-2d==1.4.0
