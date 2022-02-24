@@ -24,6 +24,7 @@ d3rlpy==0.91
 flwr==0.17.0
 gym==0.18.0
 navigation-2d==1.4.0
+stable-baselines3==1.3.0
 ```
 
 * [navigation-2d github repo](https://github.com/mjyoo2/navigation_2d)
