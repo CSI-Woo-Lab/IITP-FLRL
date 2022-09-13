@@ -86,7 +86,7 @@ env = gym.make(env_name)
 #set_random_seed(508)
 
 model_name = args.model_name
-main_dir_name= '/root/FLRL/forl_logs/' + model_name
+main_dir_name= '/root/offline_federated_rl/forl_logs/' + model_name
 algo = "CQL-FL"
 n_client = 4
 n_epoch = 2
