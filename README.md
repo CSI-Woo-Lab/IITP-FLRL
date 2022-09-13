@@ -98,33 +98,19 @@ xvfb-run -a python eval.py --env_id 3 --model_name example_models --start=160 --
 #### outputs: task_0.csv, task_3.csv
 
 ### 5. Performance
-#### task0
-| Client Algo. | Num. Client | Local Epoch | Round | Test Score |
-|--------------|-------------|-------------|-------|------------|
-| CQL-FL       | 4           | 2           | 160   | 94.0       |
-| CQL-FL       | 4           | 2           | 161   | 95.0       |
-| CQL-FL       | 4           | 2           | 162   | 98.0       |
-| CQL-FL       | 4           | 2           | 163   | 95.0       |
-| CQL-FL       | 4           | 2           | 164   | 98.0       |
-| CQL-FL       | 4           | 2           | 165   | 90.0       |
-| CQL-FL       | 4           | 2           | 166   | 97.0       |
-| CQL-FL       | 4           | 2           | 167   | 96.0       |
-| CQL-FL       | 4           | 2           | 168   | 95.0       |
-| CQL-FL       | 4           | 2           | 169   | 94.0       |
-| CQL-FL       | 4           | 2           | 170   | 95.0       |
+| Task0        |       |                |   | Task3        |       |                |
+|--------------|-------|----------------|---|--------------|-------|----------------|
+| Client Algo. | Round | Test Score (%) |   | Client Algo. | Round | Test Score (%) |
+| CQL-FL       | 160   | 94             |   | CQL-FL       | 160   | 95             |
+| CQL-FL       | 161   | 95             |   | CQL-FL       | 161   | 99             |
+| CQL-FL       | 162   | 98             |   | CQL-FL       | 162   | 97             |
+| CQL-FL       | 163   | 95             |   | CQL-FL       | 163   | 100            |
+| CQL-FL       | 164   | 98             |   | CQL-FL       | 164   | 99             |
+| CQL-FL       | 165   | 90             |   | CQL-FL       | 165   | 98             |
+| CQL-FL       | 166   | 97             |   | CQL-FL       | 166   | 97             |
+| CQL-FL       | 167   | 96             |   | CQL-FL       | 167   | 96             |
+| CQL-FL       | 168   | 95             |   | CQL-FL       | 168   | 98             |
+| CQL-FL       | 169   | 94             |   | CQL-FL       | 169   | 98             |
+| CQL-FL       | 170   | 95             |   | CQL-FL       | 170   | 97             |
 
-#### task3
-| Client Algo. | Num. Client | Local Epoch | Round | Test Score |
-|--------------|-------------|-------------|-------|------------|
-| CQL-FL       | 4           | 2           | 160   | 95.0       |
-| CQL-FL       | 4           | 2           | 161   | 99.0       |
-| CQL-FL       | 4           | 2           | 162   | 97.0       |
-| CQL-FL       | 4           | 2           | 163   | 100.0      |
-| CQL-FL       | 4           | 2           | 164   | 99.0       |
-| CQL-FL       | 4           | 2           | 165   | 98.0       |
-| CQL-FL       | 4           | 2           | 166   | 97.0       |
-| CQL-FL       | 4           | 2           | 167   | 96.0       |
-| CQL-FL       | 4           | 2           | 168   | 98.0       |
-| CQL-FL       | 4           | 2           | 169   | 98.0       |
-| CQL-FL       | 4           | 2           | 170   | 97.0       |
 
