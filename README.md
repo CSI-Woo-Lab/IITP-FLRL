@@ -10,7 +10,7 @@
 * #### Settings: 1 Server / 4 Clients (based on d3rl and flower frameworks)
 
 ## System Architecture 
-
+![navigation_2d](.jpg)
 
 ## Install
 
