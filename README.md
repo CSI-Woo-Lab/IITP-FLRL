@@ -99,7 +99,32 @@ xvfb-run -a python eval.py --env_id 3 --model_name example_models --start=160 --
 
 ### 5. Performance
 #### task0
-![task0](/asset/task0.csv)
+| Client Algo. | Num. Client | Local Epoch | Round | Test Score |
+|--------------|-------------|-------------|-------|------------|
+| CQL-FL       | 4           | 2           | 160   | 94.0       |
+| CQL-FL       | 4           | 2           | 161   | 95.0       |
+| CQL-FL       | 4           | 2           | 162   | 98.0       |
+| CQL-FL       | 4           | 2           | 163   | 95.0       |
+| CQL-FL       | 4           | 2           | 164   | 98.0       |
+| CQL-FL       | 4           | 2           | 165   | 90.0       |
+| CQL-FL       | 4           | 2           | 166   | 97.0       |
+| CQL-FL       | 4           | 2           | 167   | 96.0       |
+| CQL-FL       | 4           | 2           | 168   | 95.0       |
+| CQL-FL       | 4           | 2           | 169   | 94.0       |
+| CQL-FL       | 4           | 2           | 170   | 95.0       |
 
 #### task3
-![task3](/asset/task3.csv)
+| Client Algo. | Num. Client | Local Epoch | Round | Test Score |
+|--------------|-------------|-------------|-------|------------|
+| CQL-FL       | 4           | 2           | 160   | 95.0       |
+| CQL-FL       | 4           | 2           | 161   | 99.0       |
+| CQL-FL       | 4           | 2           | 162   | 97.0       |
+| CQL-FL       | 4           | 2           | 163   | 100.0      |
+| CQL-FL       | 4           | 2           | 164   | 99.0       |
+| CQL-FL       | 4           | 2           | 165   | 98.0       |
+| CQL-FL       | 4           | 2           | 166   | 97.0       |
+| CQL-FL       | 4           | 2           | 167   | 96.0       |
+| CQL-FL       | 4           | 2           | 168   | 98.0       |
+| CQL-FL       | 4           | 2           | 169   | 98.0       |
+| CQL-FL       | 4           | 2           | 170   | 97.0       |
+
