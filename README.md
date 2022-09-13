@@ -14,7 +14,7 @@
 ![architecture](/asset/architecture.png)
 
 ## Environments
-Red: Navigator, Blue: Obstacles, Green: Destination
+### (i) Red: Navigator, (ii) Blue: Obstacles, (iii) Green: Destination
 
 ![navigation_2d](/asset/navigation_2d.gif)
 
