@@ -15,6 +15,7 @@
 
 ## Environments
 Red: Navigator, Blue: Obstacles, Green: Destination
+
 ![navigation_2d](/asset/navigation_2d.gif)
 
 ## Install
@@ -98,6 +99,7 @@ xvfb-run -a python eval.py --env_id 3 --model_name example_models --start=160 --
 
 ### 5. Performance
 #### task0
+![task0](/asset/task0.csv)
 
-
-#### task1
+#### task3
+![task3](/asset/task3.csv)
