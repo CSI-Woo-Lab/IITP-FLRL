@@ -6,8 +6,8 @@
 #### (i) Executes offline federated reinforcement learning in a 2D-Navigation environment with two heterogeneous tasks (task classification according to destination location), and (ii) measures the success rate of destination arrival of object navigation according to the global policy created by federated learning.
 * #### Environments: Navigation-2D (Components: a start-point, a end-point, a navigator, moving obstacles)
 * #### Learning Methods: Federated Learning (Server) + Offline Reinforcement Learning (Client)
-* #### Evaluation Metric: Arrival Success Rate
-* #### Goal Score: 95% ↑ 
+* #### Evaluation Metric: Arrival Success Rate - Goal Score: 95% ↑
+* #### Settings: 1 Server / 4 Clients (based on d3rl and flower frameworks)
 
 ## System Architecture 
 
